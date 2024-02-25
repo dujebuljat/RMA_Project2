@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/playersListFragment">
+    <fragment
+        android:id="@+id/playersListFragment"
+        android:name="com.buljat.playerlistproject.view.PlayersListFragment"
+        android:label="PlayersListFragment">
+        <action
+            android:id="@+id/action_playersListFragment_to_crudFragment"
+            app:destination="@id/crudFragment" >
+            <argument
+                android:name="playerId"
+                android:defaultValue="-1" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/crudFragment"
+        android:name="com.buljat.playerlistproject.view.CrudFragment"
+        android:label="CrudFragment" >
+        <argument
+            android:name="playerId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+</navigation>
