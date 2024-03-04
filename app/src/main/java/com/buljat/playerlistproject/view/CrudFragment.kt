@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -16,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
@@ -56,6 +58,7 @@ class CrudFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -108,6 +111,7 @@ class CrudFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun activateButtons() = with(binding) {
         val calendar = Calendar.getInstance()
 
@@ -143,8 +147,17 @@ class CrudFragment : Fragment() {
         btnTakePicture.setOnClickListener {
             checkPermission()
         }
+
+        // Check if picturePath is null when editing an existing player
+        if (args.playerId != -1 && picturePath == null) {
+            viewModel.player.value?.let { player ->
+                picturePath = player.image
+                loadTakenImage(player.image)
+            }
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkPermission() = when {
         ContextCompat.checkSelfPermission(
             requireContext(),
@@ -152,14 +165,14 @@ class CrudFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(
                     requireContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.READ_MEDIA_IMAGES
                 ) == PackageManager.PERMISSION_GRANTED -> {
             takePicture()
         }
 
         else -> {
             val cameraPermission = Manifest.permission.CAMERA
-            val storagePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+            val storagePermission = Manifest.permission.READ_MEDIA_IMAGES
 
             val hasCameraPermission = ContextCompat.checkSelfPermission(
                 requireContext(),
